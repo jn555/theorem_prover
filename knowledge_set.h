@@ -1,6 +1,7 @@
 #ifndef KNOWLEDGE_SET_H
 #define KNOWLEDGE_SET_H
 
+#include "hashcons.h"
 #include "types.h"
 #include "utils.h"
 

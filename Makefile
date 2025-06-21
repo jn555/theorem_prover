@@ -1,7 +1,7 @@
 build: main
 
-main: main.c utils.c utils.h types.c types.h knowledge_set.c knowledge_set.h inference.c inference.h
-	cc main.c utils.c types.c knowledge_set.c inference.c -o main
+main: main.c utils.c utils.h types.c types.h knowledge_set.c knowledge_set.h inference.c inference.h hashcons.c hashcons.h
+	cc main.c utils.c types.c knowledge_set.c inference.c hashcons.c -o main
 
 run: main
 	./main

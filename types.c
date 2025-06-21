@@ -1,6 +1,8 @@
 #include "types.h"
 #include <stdlib.h>
 
+
+/*
 theorem_t* make_neg(theorem_t *child)
 {
     theorem_t* neg = malloc(sizeof(theorem_t));
@@ -25,3 +27,5 @@ theorem_t* make_impl(theorem_t *left, theorem_t *right)
     impl->right = right;
     return impl;
 }
+    */
+

@@ -5,5 +5,6 @@
 #include "types.h"
 
 int mp(knowledge_set_t *ks, theorem_t *a, theorem_t *b);
+int prove(knowledge_set_t *ks, theorem_t *goal);
 
 #endif
