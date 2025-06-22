@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "axioms.h"
 
 void init_knowledge_set(knowledge_set_t *ks)
 {
@@ -30,9 +31,16 @@ void add_to_knowledge_set(knowledge_set_t *ks, theorem_t *target)
 
 void print_knowledge_set(knowledge_set_t *ks)
 {
+    print_axioms();
+    printf("\n");
+    if (ks->size == 0) 
+    {
+        printf(" ⊢ ∅\n");
+        return;
+    }
     for (size_t i = 0; i < ks->size; ++i)
     {
-        printf("⊢ ");
+        printf(" ⊢ ");
         print_theorem(ks->data[i]);
         printf("\n");
     }
@@ -50,36 +58,8 @@ int contains_theorem(knowledge_set_t *ks, theorem_t* target)
 
 void init_axioms(knowledge_set_t *ks)
 {
-    theorem_t* temp_a = make_var('a');
-    theorem_t* temp_b = make_var('b');
-    theorem_t* temp_c = make_var('c');
-
-    //Axiom 1
-    //a → (b → a)
-    theorem_t* temp_impl = make_impl(temp_b, temp_a);
-    theorem_t* ax_1= make_impl(temp_a, temp_impl);
-
-    //Axiom 2
-    //(A → (B → C)) → ((A → B) → (A → C))
-    theorem_t* temp_impl_1 = make_impl(temp_b, temp_c);
-    //b -> c
-    theorem_t* temp_impl_2 = make_impl(temp_a, temp_impl_1);
-    //a -> (b -> c)
-    theorem_t* temp_impl_3 = make_impl(temp_a, temp_b);
-    //a -> b
-    theorem_t* temp_impl_4 = make_impl(temp_a, temp_c);
-    //a -> c
-    theorem_t* temp_impl_5 = make_impl(temp_impl_3, temp_impl_4);
-    //(a -> b) -> (a -> c)
-    theorem_t* ax_2 = make_impl(temp_impl_2, temp_impl_5);
-
-    //Axiom 3
-    theorem_t* temp_a_neg = make_neg(temp_a);
-    theorem_t* temp_b_neg = make_neg(temp_b);
-    theorem_t* temp_impl_6 = make_impl(temp_b_neg, temp_a_neg);
-    theorem_t* ax_3 = make_impl(temp_impl_6, temp_impl_3);
-
-    add_to_knowledge_set(ks, ax_1);
-    add_to_knowledge_set(ks, ax_2);
-    add_to_knowledge_set(ks, ax_3);
+    for (int i = 0; i < ax_size; i++)
+    {
+        add_to_knowledge_set(ks, axiom_set[i]);
+    }
 }

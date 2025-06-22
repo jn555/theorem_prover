@@ -5,8 +5,6 @@ int compare_trees(theorem_t *a, theorem_t *b)
 {
     if (a->op != b->op)
         return 0;
-    if (a->op == VARIABLE && b->op == VARIABLE && (a->var_name != b->var_name))
-        return 0;
     if (a->op == NEGATION && b->op == NEGATION)
     {
         if (a->child != NULL && b->child != NULL)
