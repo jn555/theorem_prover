@@ -1,10 +1,26 @@
 #ifndef INFERENCE_H
 #define INFERENCE_H
 
+#define MAX_AXIOM_VARS  3   // enough for a,b,c
+
 #include "knowledge_set.h"
 #include "types.h"
 
+//with each iteration step, reset this. it's for adding axioms
+typedef struct {
+    char        key[MAX_AXIOM_VARS];
+    theorem_t*  value[MAX_AXIOM_VARS];
+    int         size;
+} subst_map_t;
+
 int mp(knowledge_set_t *ks, theorem_t *a, theorem_t *b);
 int prove(knowledge_set_t *ks, theorem_t *goal);
+//int seek_axiom(knowledge_set_t *ks, theorem_t *source, theorem_t *goal);
+
+void subst_map_init(subst_map_t *m);
+theorem_t* find_mapping(subst_map_t *m, char target);
+int add_mapping(subst_map_t *m, char key, theorem_t* theorem);
+int fit_onto_axiom(subst_map_t* mapping, theorem_t* axiom, theorem_t* target);
+
 
 #endif

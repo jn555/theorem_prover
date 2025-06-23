@@ -34,12 +34,14 @@ void add_to_axioms(theorem_t* target)
     ax_size++;
 }
 
-
-theorem_t* generate_modified_axiom(theorem_t* axiom, theorem_t* goal)
+/*
+// so basically the LHS of source matches the LHS structure of axiom, so 
+theorem_t* generate_casted_axiom(theorem_t* axiom, theorem_t* source)
 {
-    //so they match structure, just make the var names match
-    return axiom;
+
+
 }
+*/
 
 void init_axioms_1()
 {

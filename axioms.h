@@ -14,6 +14,6 @@ void print_axioms();
 void init_axiom_set();
 void init_axioms_1();
 void add_to_axioms(theorem_t* target);
-theorem_t* generate_modified_axiom(theorem_t* axiom, theorem_t* goal);
+//theorem_t* generate_casted_axiom(theorem_t* axiom, theorem_t* source);
 
 #endif
