@@ -104,13 +104,13 @@ int mp(knowledge_set_t *ks, theorem_t *a, theorem_t *b)
     return 0;
 }
 
-//BASICALLY, if its an implication and the left side of it matches an axiom, cast the axiom and insert it, so we can get the RHS
+
 //and ALSO if it matches the left hand side of an axiom, you could derive the RHS of the axiom with MP, just make sure the variables match, as the LHS may not have all of the vars within it (more may be present in RHS, so mapping might not work)
-//iterate through each ks element a, if ⊢a and ⊢a -> b, add the b to the knowledge set
 int prove(knowledge_set_t *ks, theorem_t *goal)
 {
     while (1)
     {
+        //Stage 1: iterate through each ks element a, if ⊢a and ⊢a -> b, add the b to the knowledge set
         int old_size = ks->size;
         for (int i = 0; i < old_size; i++)
         {
@@ -118,33 +118,41 @@ int prove(knowledge_set_t *ks, theorem_t *goal)
             for (int j = 0; j < old_size; j++)
             {
                 theorem_t* curr = ks->data[j];
-                if (curr->op != IMPLIES) continue;
-                // printf("Iteration i %d\n", i);
-                // printf("Iteration j %d\n", j);
-                if (curr->left == temp)
+                if (curr->op == IMPLIES && curr->left == temp)
                 {
-                    theorem_t *new = curr->right;
-                    add_to_knowledge_set(ks, new);
+                    add_to_knowledge_set(ks, curr->right);
                     //add_to_knowledge_set already checks duplicate
-                    if (new == goal) return 1;
+                    if (curr->right == goal) return 1;
                 }
             }
         }
-        //adding axioms
+
+        //Stage 2 & 3
         subst_map_t subst_map;
-        subst_map_init(&subst_map);
         for (int i = 0; i < old_size; i++)
         {
             theorem_t* temp = ks->data[i];
             if (temp->op != IMPLIES) continue;
             for (int j = 0; j < ax_size; j++)
             {
+                //Stage 2: for each theorem in KS (if it's an implication) and the left side of it matches an axiom, cast the axiom and insert it, which lets us derive the RHS
                 subst_map_init(&subst_map);
                 if (fit_onto_axiom(&subst_map, axiom_set[j], temp->left))
                 {
                     add_to_knowledge_set(ks, generate_modified_axiom(&subst_map, axiom_set[j]));
                     add_to_knowledge_set(ks, temp->right);
                     if (temp->right == goal) return 1;
+                }
+
+                //Stage 3: for each theorem in KS, if it matches the LHS of an axiom, add that axiom to the KS and its corresponding RHS (ensuring proper variable bindings)
+                subst_map_init(&subst_map);
+                if (axiom_set[j]->left->op != VARIABLE && fit_onto_axiom(&subst_map, axiom_set[j]->left, temp))  //excluding axioms where LHS is just a var, as anythign can be mapped onto that
+                {
+                    theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[j]);
+                    print_theorem(new_theorem);
+                    add_to_knowledge_set(ks, new_theorem);
+                    add_to_knowledge_set(ks, new_theorem->right);
+                    if (new_theorem == goal || new_theorem->right == goal) return 1;
                 }
             }
         }

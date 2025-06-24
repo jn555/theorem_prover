@@ -22,6 +22,7 @@ int main()
 
     theorem_t* temp_a = make_var('a');
     theorem_t* temp_b = make_var('b');
+    theorem_t* temp_c = make_var('c');
 
     theorem_t* temp_impl_a_b_pre = make_impl (temp_a, temp_b);
 
@@ -54,7 +55,12 @@ int main()
 
     printf("______________________________________________________________________________________________________________\n");
 
-
+    theorem_t* temp_impl_a_c = make_impl (temp_a, temp_c);
+    theorem_t* new_impl = make_impl (temp_impl_a_b_pre, temp_impl_a_c);
+    add_to_knowledge_set(ks, new_impl);
+    print_knowledge_set(ks);
+    printf("Result of Prove: %d", prove(ks, new_impl));
+    print_knowledge_set(ks);
     // printf("The expression is: \t");
     // print_theorem(temp_impl_4); 
     // printf("The axiom it: \t");
