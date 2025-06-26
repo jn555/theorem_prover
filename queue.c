@@ -24,3 +24,14 @@ theorem_t* pop_queue(queue_t* queue)
     queue->size--;
     return out;
 }
+
+void print_queue(queue_t* queue)
+{
+    printf("\nQueue:\n");
+    for (int i = 0; i < queue->size; i++)
+    {
+        print_theorem(queue->data[i]);
+        printf("\n");
+    }
+    printf("\n_________\n");
+}

@@ -16,7 +16,7 @@ typedef struct {
 
 int mp(knowledge_set_t *ks, theorem_t *goal);
 int prove(knowledge_set_t *ks, theorem_t *goal);
-int prove_backwards(knowledge_set_t *ks, queue_t* goals, theorem_t* final_goal);
+int prove_backwards(knowledge_set_t *ks, theorem_t* final_goal);
 
 void subst_map_init(subst_map_t *m);
 //void subst_map_reset(subst_map_t *m);

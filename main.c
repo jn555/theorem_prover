@@ -34,9 +34,7 @@ int main()
     // add_to_knowledge_set(ks, a);
     // add_to_knowledge_set(ks, a_impl_b);
     
-    queue_t* goals = malloc(sizeof(queue_t));
-    init_queue(goals);
-    printf("Result of proof: %d", prove_backwards(ks, goals, a_impl_a));
+    printf("Result of proof: %d", prove_backwards(ks, a_impl_a));
     print_knowledge_set(ks);
     free_knowledge_set(ks);
 }
