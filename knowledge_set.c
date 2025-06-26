@@ -56,6 +56,10 @@ int contains_theorem(knowledge_set_t *ks, theorem_t* target)
     return 0;
 }
 
+// Shouldn't be used
+// It just copies over the stuff in the axioms struct to the knowledge set (KS)
+// (which is not how the axioms should work, as the variables, i.e. a, b, c, could be ANY subformula)
+// If you just added them to the KS, then the variables would just be simply variables, not castable to be subformulas
 void init_axioms(knowledge_set_t *ks)
 {
     for (int i = 0; i < ax_size; i++)

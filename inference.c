@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "axioms.h"
 
-
 /*
 void subst_map_reset(subst_map_t *m) 
 {
@@ -89,22 +88,7 @@ int fit_onto_axiom(subst_map_t* mapping, theorem_t* axiom, theorem_t* target)
     }
 }
 
-//checks if ⊢a and ⊢a->b; if so, then adds ⊢b to knowledge set
-int mp(knowledge_set_t *ks, theorem_t *a, theorem_t *b)
-{
-    theorem_t* impl = make_impl(a, b);
-    printf("Made Impl: ");
-    print_theorem(impl);
-    printf("\n");
-    if (contains_theorem(ks, a) && contains_theorem(ks, impl))
-    {
-        add_to_knowledge_set(ks, b);
-        return 1;
-    }
-    return 0;
-}
-
-
+//ignore this prove() function, it was forward proving attempt, which is not goal directed, so its pretty much just random search until we get goal, and lotta times wont reach goal (not efficient)
 //and ALSO if it matches the left hand side of an axiom, you could derive the RHS of the axiom with MP, just make sure the variables match, as the LHS may not have all of the vars within it (more may be present in RHS, so mapping might not work)
 int prove(knowledge_set_t *ks, theorem_t *goal)
 {
@@ -127,7 +111,7 @@ int prove(knowledge_set_t *ks, theorem_t *goal)
             }
         }
 
-        //Stage 2 & 3
+        //Stage 2
         subst_map_t subst_map;
         for (int i = 0; i < old_size; i++)
         {
@@ -143,20 +127,65 @@ int prove(knowledge_set_t *ks, theorem_t *goal)
                     add_to_knowledge_set(ks, temp->right);
                     if (temp->right == goal) return 1;
                 }
-
-                //Stage 3: for each theorem in KS, if it matches the LHS of an axiom, add that axiom to the KS and its corresponding RHS (ensuring proper variable bindings)
-                subst_map_init(&subst_map);
-                if (axiom_set[j]->left->op != VARIABLE && fit_onto_axiom(&subst_map, axiom_set[j]->left, temp))  //excluding axioms where LHS is just a var, as anythign can be mapped onto that
-                {
-                    theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[j]);
-                    print_theorem(new_theorem);
-                    add_to_knowledge_set(ks, new_theorem);
-                    add_to_knowledge_set(ks, new_theorem->right);
-                    if (new_theorem == goal || new_theorem->right == goal) return 1;
-                }
             }
         }
         if (ks->size == old_size) return 0; //knowledge set not expanded
     }
 }
 
+//iterate through each ks element a, if ⊢a and ⊢a -> b, add the b to the knowledge set
+int mp(knowledge_set_t *ks, theorem_t *goal)
+{
+    theorem_t* outer;
+    theorem_t* inner;
+    for (int i = 0; i < ks->size; i++)
+    {
+        // ⊢a
+        outer = ks->data[i];
+        for (int j = 0; j < ks->size; j++)
+        {
+            inner = ks->data[j];
+            //if there is an ⊢a->b
+            if (inner->op == IMPLIES && inner->left == outer)
+            {
+                add_to_knowledge_set(ks, inner->right);
+                if (inner->right == goal) return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+
+//the main prove function im working on, it infinite loops though.
+//the point is to see if i can form the goal (i.e. the formula im trying to prove) from the RHS of an axiom (as all axioms are implications)
+//If the LHS of the axiom (with the variables set as the appropriate subformulas to match the goal) is in the knowledge set, then u've proven ur goal.
+// If not, then set the LHS of the axiom to the goal (you're trying to derive that now).
+// As that will give you a string of implications which you can use MP for to get your goal.
+
+//However, it currently infinite loops in adding axioms. This is due to a core issue with logic
+int prove_backwards(knowledge_set_t *ks, queue_t* goals, theorem_t* final_goal)
+{
+    subst_map_t subst_map;
+
+    push_queue(goals, final_goal);
+
+    while (goals->size > 0)
+    {
+       theorem_t* goal = pop_queue(goals);
+        if (mp(ks, goal)) return 1;
+        print_knowledge_set(ks);
+        for (int i = 0; i < ax_size; i++)
+        {
+            subst_map_init(&subst_map);
+            if (fit_onto_axiom(&subst_map, axiom_set[i]->right, goal))
+            {
+                theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[i]);
+                add_to_knowledge_set(ks, new_theorem);
+                //now we just need the LHS of the axiom so that we can get the goal
+                if (!contains_theorem(ks, new_theorem->left)) push_queue(goals, new_theorem->left);
+            }
+        }
+    }
+    return 0;
+}

@@ -3,6 +3,7 @@
 static int ax_cap;
 theorem_t** axiom_set = NULL;
 int ax_size = 0;
+
 void init_axiom_set()
 {
     axiom_set = malloc(sizeof(theorem_t *) * INIT_AXIOM_SIZE);

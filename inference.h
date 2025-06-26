@@ -5,6 +5,7 @@
 
 #include "knowledge_set.h"
 #include "types.h"
+#include "queue.h"
 
 //with each iteration step, reset this. it's for adding axioms
 typedef struct {
@@ -13,9 +14,9 @@ typedef struct {
     int         size;
 } subst_map_t;
 
-int mp(knowledge_set_t *ks, theorem_t *a, theorem_t *b);
+int mp(knowledge_set_t *ks, theorem_t *goal);
 int prove(knowledge_set_t *ks, theorem_t *goal);
-//int seek_axiom(knowledge_set_t *ks, theorem_t *source, theorem_t *goal);
+int prove_backwards(knowledge_set_t *ks, queue_t* goals, theorem_t* final_goal);
 
 void subst_map_init(subst_map_t *m);
 //void subst_map_reset(subst_map_t *m);
