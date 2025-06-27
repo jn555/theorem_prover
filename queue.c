@@ -25,13 +25,13 @@ theorem_t* pop_queue(queue_t* queue)
     return out;
 }
 
-void print_queue(queue_t* queue)
-{
-    printf("\nQueue:\n");
-    for (int i = 0; i < queue->size; i++)
-    {
-        print_theorem(queue->data[i]);
+void print_queue(queue_t* q) {
+    printf("Queue (size=%d):\n", q->size);
+    int idx = q->read_ptr;
+    for (int cnt = 0; cnt < q->size; ++cnt) {
+        print_theorem(q->data[idx]);
         printf("\n");
+        idx = (idx + 1) % QUEUE_SIZE;
     }
-    printf("\n_________\n");
+    printf("––––––––––––––––\n");
 }

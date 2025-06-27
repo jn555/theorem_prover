@@ -31,7 +31,11 @@ int main()
     theorem_t* c = make_var('c');
     
     theorem_t* a_impl_a = make_impl(a, a);
-    // add_to_knowledge_set(ks, a);
+    // theorem_t* a_impl_b = make_impl(a, b);
+    // theorem_t* b_impl_c = make_impl(b, c);
+    // theorem_t* a_impl_c = make_impl(a, c);
+    // add_to_knowledge_set(ks, a_impl_b);
+    // add_to_knowledge_set(ks, b_impl_c);
     // add_to_knowledge_set(ks, a_impl_b);
     
     printf("Result of proof: %d", prove_backwards(ks, a_impl_a));

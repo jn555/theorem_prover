@@ -135,32 +135,58 @@ int prove_backwards(knowledge_set_t *ks, theorem_t* final_goal)
     subst_map_t subst_map;
 
     push_queue(goals, final_goal);
+    print_queue(goals);
+
+    int RIGHT_ITERS = 1;
+    int increment_right_iters = 0;
+    theorem_t* sub_axiom;
 
     while (goals->size > 0)
     {
         if (mp(ks, final_goal)) return 1;
         theorem_t* goal = pop_queue(goals);
-        if (contains_theorem(seen_goals, goal))
-            continue;
+
         add_to_knowledge_set(seen_goals, goal);
         for (int i = 0; i < ax_size; i++)
         {
             subst_map_init(&subst_map);
-            if (fit_onto_axiom(&subst_map, axiom_set[i]->right, goal))
+            sub_axiom = axiom_set[i];
+            for (int j = 0; j < RIGHT_ITERS; j++)
             {
-                theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[i]);
+                if (sub_axiom->op == IMPLIES)
+                    sub_axiom = sub_axiom->right;
+            }
+            printf("Number of iters: %d, Axiom we are comparing for: \t", RIGHT_ITERS);
+            print_theorem(sub_axiom);
+            printf("\n");
+            if (fit_onto_axiom(&subst_map, sub_axiom, goal))
+            {
+                printf("axiom %d\n", i);
+                theorem_t* new_theorem = generate_modified_axiom(&subst_map, sub_axiom); //issue if not variables bound
                 add_to_knowledge_set(ks, new_theorem);
                 if (mp(ks, goal)) return 1;
                 //now we just need the LHS of the axiom so that we can get the goal
                 // push_queue(goals, new_theorem->left);
-                if (!contains_theorem(seen_goals, new_theorem->left))
+                for (int j = 0; j < RIGHT_ITERS; j++)
                 {
-                    add_to_knowledge_set(seen_goals, new_theorem->left);
-                    push_queue(goals, new_theorem->left);
+                    if (!contains_theorem(seen_goals, new_theorem->left))
+                    {
+                        printf("Adding to seen goals: ");
+                        print_theorem(new_theorem->left);
+                        printf("\n");
+                        add_to_knowledge_set(seen_goals, new_theorem->left);
+                        push_queue(goals, new_theorem->left);
+                        increment_right_iters = 1;
+                    }
+                    new_theorem = new_theorem->right;
                 }
             }
             print_queue(goals);
         }
+        if (increment_right_iters == 0)
+            RIGHT_ITERS++;
+        else
+            increment_right_iters = 0;
     }
     return 0;
 }
