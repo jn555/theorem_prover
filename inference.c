@@ -147,7 +147,7 @@ int prove_backwards(knowledge_set_t *ks, theorem_t* final_goal)
         theorem_t* goal = pop_queue(goals);
 
         add_to_knowledge_set(seen_goals, goal);
-        for (int i = 0; i < ax_size; i++)
+        for (int i = 0; i < NUM_AXIOMS; i++)
         {
             subst_map_init(&subst_map);
             sub_axiom = axiom_set[i];
@@ -190,3 +190,14 @@ int prove_backwards(knowledge_set_t *ks, theorem_t* final_goal)
     }
     return 0;
 }
+
+/*
+int prove_with_tree(knowledge_set_t *ks, theorem_t* final_goal)
+{
+    decision_node_t* head = malloc(sizeof(decision_node_t));
+    head->ks = ks;
+    head->prev = NULL;
+
+    for (int i = 0; i < )
+}
+*/

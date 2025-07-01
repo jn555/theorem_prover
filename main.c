@@ -7,14 +7,15 @@
 #include "knowledge_set.h"
 #include "inference.h"
 #include "axioms.h"
+#include "decision_tree.h"
 
 int main()
 {
     init_hashtable();
+    init_axiom_set();
     knowledge_set_t *ks = malloc(sizeof(knowledge_set_t));
     init_knowledge_set(ks);
     print_knowledge_set(ks);
-    init_axioms_1();
     
     //this init axioms function I have commented below should not be used. I
     // It just copies over the stuff in the axioms struct to the knowledge set (KS)
@@ -40,5 +41,6 @@ int main()
     
     printf("Result of proof: %d", prove_backwards(ks, a_impl_a));
     print_knowledge_set(ks);
+
     free_knowledge_set(ks);
 }

@@ -62,7 +62,7 @@ int contains_theorem(knowledge_set_t *ks, theorem_t* target)
 // If you just added them to the KS, then the variables would just be simply variables, not castable to be subformulas
 void init_axioms(knowledge_set_t *ks)
 {
-    for (int i = 0; i < ax_size; i++)
+    for (int i = 0; i < NUM_AXIOMS; i++)
     {
         add_to_knowledge_set(ks, axiom_set[i]);
     }
