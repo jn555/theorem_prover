@@ -124,6 +124,7 @@ int mp(knowledge_set_t *ks, theorem_t *goal)
 // As that will give you a string of implications which you can use MP for to get your goal.
 
 //However, it currently infinite loops in adding axioms. This is due to a core issue with logic
+
 int prove_backwards(knowledge_set_t *ks, theorem_t* final_goal)
 {
     queue_t* goals = malloc(sizeof(queue_t));
@@ -191,13 +192,89 @@ int prove_backwards(knowledge_set_t *ks, theorem_t* final_goal)
     return 0;
 }
 
-/*
-int prove_with_tree(knowledge_set_t *ks, theorem_t* final_goal)
-{
-    decision_node_t* head = malloc(sizeof(decision_node_t));
-    head->ks = ks;
-    head->prev = NULL;
 
-    for (int i = 0; i < )
+int prove_with_tree(decision_node_t* curr)
+{
+    print_decision_tree(curr);
+
+    if (mp(curr->ks, curr->goal)) return 1;
+
+    subst_map_t subst_map;
+
+    //decision path 1: if you can directly form the goal with an axiom
+    for (int i = 0; i < NUM_AXIOMS; i++)
+    {
+        subst_map_init(&subst_map);
+        
+        if (fit_onto_axiom(&subst_map, axiom_set[i], curr->goal))
+        {
+            //if axiom fits onto it, then take that as decision edge
+            knowledge_set_t* new_ks = clone_knowledge_set(curr->ks);
+            theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[i]); //issue if not variables bound
+            add_to_knowledge_set(new_ks, new_theorem);
+            decision_node_t* next = malloc(sizeof(decision_node_t));
+
+            curr->next = next;
+
+            next->prev = curr;
+            next->next = NULL;
+            next->ks = new_ks;
+
+            return 1; //may be wrong, i wanna do MP
+        }
+    }
+
+    //decision path 2: adding axiom whos RHS matches of goal
+    for (int i = 0; i < NUM_AXIOMS; i++)
+    {
+        subst_map_init(&subst_map);
+        if (axiom_set[i]->op == IMPLIES && fit_onto_axiom(&subst_map, axiom_set[i]->right, curr->goal))
+        {
+            //if axiom fits onto it, then take that as decision edge
+            knowledge_set_t* new_ks = clone_knowledge_set(curr->ks);
+            theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[i]); //issue if not variables bound
+            add_to_knowledge_set(new_ks, new_theorem);
+            decision_node_t* next = malloc(sizeof(decision_node_t));
+
+            curr->next = next;
+
+            next->goal = new_theorem->left;
+            next->prev = curr;
+            next->ks = new_ks;
+            next->next = NULL;
+
+            return prove_with_tree(next);
+        }
+    }
+    /* add this one after
+    //decision path 3: adding axiom whos RHS RHS matches of goal
+    //this only works with axiom 2, but im adding for loop for completeness
+    for (int i = 0; i < NUM_AXIOMS; i++)
+    {
+        subst_map_init(&subst_map);
+        if (axiom_set[i]->right->op == IMPLIES && fit_onto_axiom(&subst_map, axiom_set[i]->right->right, curr->goal))
+        {
+            //if axiom fits onto it, then take that as decision edge
+            theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[i]); //issue if not variables bound
+            knowledge_set_t* new_ks = clone_knowledge_set(curr->ks);
+            add_to_knowledge_set(new_ks, new_theorem);
+            decision_node_t* next_1 = malloc(sizeof(decision_node_t));
+            decision_node_t* next_2 = malloc(sizeof(decision_node_t));
+            curr->next = next;
+            next_1->goal = new_theorem->left;
+            next_2->goal = new_theorem->right->left;
+            next_1->prev = curr;
+            next_1->next = NULL;
+            next_2->prev = curr;
+            next_2->next = NULL;
+            return prove_with_tree(next_1) && prove_with_tree(next_2);
+        }        
+    }
+    */
+
+    //if cant do any of above, then backtrack
+    decision_node_t* prev = curr->prev;
+    //gotta somehow keep track of which decision we took and take other
+
+    return 0;
 }
-*/

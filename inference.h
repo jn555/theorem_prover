@@ -6,6 +6,7 @@
 #include "knowledge_set.h"
 #include "types.h"
 #include "queue.h"
+#include "decision_tree.h"
 
 //with each iteration step, reset this. it's for adding axioms
 typedef struct {
@@ -17,6 +18,7 @@ typedef struct {
 int mp(knowledge_set_t *ks, theorem_t *goal);
 int prove(knowledge_set_t *ks, theorem_t *goal);
 int prove_backwards(knowledge_set_t *ks, theorem_t* final_goal);
+int prove_with_tree(decision_node_t* curr);
 
 void subst_map_init(subst_map_t *m);
 //void subst_map_reset(subst_map_t *m);

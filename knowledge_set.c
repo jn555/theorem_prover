@@ -56,6 +56,21 @@ int contains_theorem(knowledge_set_t *ks, theorem_t* target)
     return 0;
 }
 
+knowledge_set_t* clone_knowledge_set (const knowledge_set_t *ks) 
+{
+  knowledge_set_t *new_ks = malloc(sizeof *new_ks);
+
+  new_ks->capacity = ks->capacity;
+  new_ks->size     = ks->size;
+
+  new_ks->data     = malloc(sizeof(theorem_t*) * new_ks->capacity);
+
+  memcpy(new_ks->data, ks->data, sizeof(theorem_t*) * ks->size);
+
+  return new_ks;
+}
+
+
 // Shouldn't be used
 // It just copies over the stuff in the axioms struct to the knowledge set (KS)
 // (which is not how the axioms should work, as the variables, i.e. a, b, c, could be ANY subformula)

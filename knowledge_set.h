@@ -16,7 +16,7 @@ void free_knowledge_set(knowledge_set_t *ks);
 void add_to_knowledge_set(knowledge_set_t *ks, theorem_t *target);
 void print_knowledge_set(knowledge_set_t *ks);
 void init_axioms(knowledge_set_t *ks);
-
+knowledge_set_t* clone_knowledge_set (const knowledge_set_t *ks);
 int contains_theorem(knowledge_set_t *ks, theorem_t* target);
 
 #endif

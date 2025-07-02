@@ -38,8 +38,13 @@ int main()
     // add_to_knowledge_set(ks, a_impl_b);
     // add_to_knowledge_set(ks, b_impl_c);
     // add_to_knowledge_set(ks, a_impl_b);
-    
-    printf("Result of proof: %d", prove_backwards(ks, a_impl_a));
+
+    decision_node_t* head = malloc(sizeof(decision_node_t));
+    head->goal = a_impl_a;
+    head->ks = ks;
+    head->next = NULL;
+    head->prev = NULL;
+    printf("Result of proof: %d", prove_with_tree(head));
     print_knowledge_set(ks);
 
     free_knowledge_set(ks);
