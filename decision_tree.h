@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "knowledge_set.h"
 #include "types.h"
@@ -14,6 +15,7 @@ typedef struct decision_node
     knowledge_set_t* ks;
     struct decision_node* next;
     struct decision_node* prev;
+    bool paths [9];
 } decision_node_t;
 
 void print_decision_tree(decision_node_t* head);

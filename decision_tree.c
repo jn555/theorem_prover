@@ -11,12 +11,13 @@
 
 void print_decision_tree(decision_node_t* head)
 {
-    printf("final goal:\t");
+    printf("printing decision tree:\n");
     decision_node_t* curr = head;
     while (curr != NULL)
     {
         print_theorem(curr->goal);
-        curr = curr->next;
+        curr = curr->prev;
         printf("\n");
     }
+    printf("\n");
 }

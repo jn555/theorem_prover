@@ -32,6 +32,7 @@ int main()
     theorem_t* c = make_var('c');
     
     theorem_t* a_impl_a = make_impl(a, a);
+    theorem_t* a_impl_a_impl_a = make_impl(a, a_impl_a);
     // theorem_t* a_impl_b = make_impl(a, b);
     // theorem_t* b_impl_c = make_impl(b, c);
     // theorem_t* a_impl_c = make_impl(a, c);
@@ -39,11 +40,13 @@ int main()
     // add_to_knowledge_set(ks, b_impl_c);
     // add_to_knowledge_set(ks, a_impl_b);
 
-    decision_node_t* head = malloc(sizeof(decision_node_t));
+    decision_node_t* head = calloc(1, sizeof(*head));
     head->goal = a_impl_a;
     head->ks = ks;
     head->next = NULL;
     head->prev = NULL;
+    knowledge_set_t *seen_goals = malloc(sizeof(knowledge_set_t));
+    init_knowledge_set(seen_goals);
     printf("Result of proof: %d", prove_with_tree(head));
     print_knowledge_set(ks);
 

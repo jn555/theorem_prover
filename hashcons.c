@@ -55,8 +55,21 @@ theorem_t* make_var(char name)
 
 theorem_t* make_neg(theorem_t *child)
 {
+    int neg_count = 1;
+    theorem_t *t = child;
+    while (t->op == NEGATION) {
+        neg_count++;
+        t = t->child;
+    }
+
+    // 2) if even number of negations, just return the innermost formula
+    if ((neg_count & 1) == 0) {
+        return t;
+    }
+    
     uint32_t h = hash_unary(NEGATION, child);
     uint32_t index = h % TABLE_SIZE;
+
     // Lookup phase
     for (theorem_t *curr = hashtable[index]; curr != NULL; curr = curr->next)
     {
