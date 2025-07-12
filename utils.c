@@ -34,6 +34,12 @@ int compare_trees(theorem_t *a, theorem_t *b)
 
 void print_theorem(theorem_t *a)
 {
+    if (a->op == GENERIC) 
+    {
+        printf(" □ ");
+        return;
+    }
+
     if (a->op == VARIABLE) 
     {
         printf(" %c ", a->var_name);

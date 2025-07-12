@@ -66,7 +66,7 @@ theorem_t* make_neg(theorem_t *child)
     if ((neg_count & 1) == 0) {
         return t;
     }
-    
+
     uint32_t h = hash_unary(NEGATION, child);
     uint32_t index = h % TABLE_SIZE;
 
@@ -111,6 +111,16 @@ theorem_t* make_impl(theorem_t* left, theorem_t* right)
 
     return new_theorem;
 }
+
+theorem_t* make_generic()
+{
+    theorem_t* new_theorem = malloc(sizeof(theorem_t));
+    new_theorem->op = GENERIC;
+    return new_theorem;
+}
+
+
+
 
 
 

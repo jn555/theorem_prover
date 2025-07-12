@@ -9,6 +9,22 @@
 //     target->prev = prev;
 // }
 
+
+void init_decision_node(decision_node_t* target, 
+                        theorem_t* goal,
+                        knowledge_set_t* ks,
+                        decision_node_t* next,
+                        decision_node_t* prev)
+{
+    target->goal = goal;
+    target->ks   = ks;
+    target->next = next;
+    target->prev = prev;
+    // clear all branch flags
+    for (int i = 0; i < NUM_AXIOM_PATHS; ++i)
+        target->paths[i] = false;
+}
+
 void print_decision_tree(decision_node_t* head)
 {
     printf("printing decision tree:\n");

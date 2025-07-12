@@ -45,10 +45,13 @@ int main()
     head->ks = ks;
     head->next = NULL;
     head->prev = NULL;
+    
     knowledge_set_t *seen_goals = malloc(sizeof(knowledge_set_t));
     init_knowledge_set(seen_goals);
-    printf("Result of proof: %d", prove_with_tree(head));
+
+    printf("Result of proof: %d", prove_with_tree(head, seen_goals));
     print_knowledge_set(ks);
 
     free_knowledge_set(ks);
+    free(seen_goals);
 }

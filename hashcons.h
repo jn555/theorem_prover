@@ -18,5 +18,6 @@ static inline uint32_t hash_binary(uint32_t op, theorem_t* left, theorem_t* righ
 theorem_t* make_var(char name);
 theorem_t* make_neg(theorem_t *child);
 theorem_t* make_impl(theorem_t* left, theorem_t* right);
+theorem_t* make_generic();
 
 #endif

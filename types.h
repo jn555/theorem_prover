@@ -7,6 +7,7 @@ typedef enum
     VARIABLE,
     IMPLIES,
     NEGATION,
+    GENERIC,
 } operator_t;
 
 typedef struct theorem 
