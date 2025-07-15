@@ -9,7 +9,7 @@
 #include "types.h"
 #include "utils.h"
 
-#define NUM_AXIOM_PATHS 9
+#define NUM_AXIOM_PATHS 6
 
 typedef struct decision_node
 {
@@ -26,4 +26,6 @@ void init_decision_node(decision_node_t* target,
                         knowledge_set_t* ks,
                         decision_node_t* next,
                         decision_node_t* prev);
+int contains_goal(decision_node_t* target, theorem_t* goal);
+
 #endif

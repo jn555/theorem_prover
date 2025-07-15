@@ -40,18 +40,16 @@ int main()
     // add_to_knowledge_set(ks, b_impl_c);
     // add_to_knowledge_set(ks, a_impl_b);
 
-    decision_node_t* head = calloc(1, sizeof(*head));
-    head->goal = a_impl_a;
-    head->ks = ks;
-    head->next = NULL;
-    head->prev = NULL;
+    //decision_node_t* head = calloc(1, sizeof(*head));
     
-    knowledge_set_t *seen_goals = malloc(sizeof(knowledge_set_t));
-    init_knowledge_set(seen_goals);
+    decision_node_t* head = malloc(sizeof(decision_node_t)); 
+    init_decision_node(head, a_impl_a, ks, NULL, NULL);
+    // knowledge_set_t *seen_goals = malloc(sizeof(knowledge_set_t));
+    // init_knowledge_set(seen_goals);
 
-    printf("Result of proof: %d", prove_with_tree(head, seen_goals));
+    printf("Result of proof: %d", prove_with_tree(head, a_impl_a));
     print_knowledge_set(ks);
 
     free_knowledge_set(ks);
-    free(seen_goals);
+    // free(seen_goals);
 }

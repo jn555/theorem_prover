@@ -37,3 +37,12 @@ void print_decision_tree(decision_node_t* head)
     }
     printf("\n");
 }
+
+int contains_goal(decision_node_t* target, theorem_t* goal)
+{
+    for (decision_node_t* curr = target; curr != NULL; curr = curr->prev)
+    {
+        if (curr->goal == goal) return 1;
+    }
+    return 0;
+}

@@ -199,8 +199,10 @@ int prove_backwards(knowledge_set_t *ks, theorem_t* final_goal)
 
 //what if for different branches it needs the same goal, which gets combined to final one, but you need those rpevious ones too?
 
-int prove_with_tree(decision_node_t* curr, knowledge_set_t *seen_goals)
+//eliminate cycles by checking the path's KS
+int prove_with_tree(decision_node_t* curr, theorem_t* final_goal)
 {
+    sleep(1);
     if (!curr) return 0;
     if(curr->goal != NULL) print_decision_tree(curr);
 
@@ -208,16 +210,15 @@ int prove_with_tree(decision_node_t* curr, knowledge_set_t *seen_goals)
 
     if (mp(curr->ks, curr->goal)) return 1;
 
-    add_to_knowledge_set(seen_goals, curr->goal);
-
     subst_map_t subst_map;
 
     //decision path group 1: if you can directly form the goal with an axiom
-    for (int i = 0; i < NUM_AXIOMS; i++)
+    for (int i = 0; i < NUM_AXIOMS; i++) //0 -> 2
     {
         if (curr->paths[i]) continue;
-        subst_map_init(&subst_map);
         curr->paths[i] = true;
+
+        subst_map_init(&subst_map);
         //if not already explored, and you can form the goal with the axiom directly
         if (fit_onto_axiom(&subst_map, axiom_set[i], curr->goal))
         {
@@ -241,9 +242,12 @@ int prove_with_tree(decision_node_t* curr, knowledge_set_t *seen_goals)
             // next->goal = NULL; //already reached goal
             printf("The KS is: \n");
             print_knowledge_set(new_ks);
+            //print_decision_tree(curr);
             printf("\n");
-            if (prove_with_tree(next, seen_goals))     // only return if child finds a proof
-                return 1;
+            // if (prove_with_tree(next, seen_goals))     // only return if child finds a proof
+            //if (mp(next->ks, final_goal)) return 1;
+
+            return 1;
             //return 1; //may be wrong, i wanna do MP
         }
     }
@@ -253,53 +257,60 @@ int prove_with_tree(decision_node_t* curr, knowledge_set_t *seen_goals)
     //decision path 2: adding axiom whos RHS matches of goal
     for (int i = 0; i < NUM_AXIOMS; i++)
     {
-        if (curr->paths[i+3]) continue;
-        subst_map_init(&subst_map);
+        if (curr->paths[i+3]) continue; //3->5
         curr->paths[i+3] = true;
-        if (axiom_set[i]->right->op == IMPLIES && fit_onto_axiom(&subst_map, axiom_set[i]->right, curr->goal))
+
+        subst_map_init(&subst_map);
+        if (fit_onto_axiom(&subst_map, axiom_set[i]->right, curr->goal))
         {
-            theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[i]); //issue if not variables bound
-            if (contains_theorem(curr->ks, new_theorem)) continue;
+            theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[i]);
+            if (contains_goal(curr, new_theorem->left)) continue; //prevent cycles in decision tree
+            if (contains_theorem(curr->ks, new_theorem)) continue; //prevent duplication in KS
             //if axiom fits onto it, then take that as decision edge
             knowledge_set_t* new_ks = clone_knowledge_set(curr->ks);
             add_to_knowledge_set(new_ks, new_theorem);
+
             decision_node_t* next = malloc(sizeof(decision_node_t));
             curr->next = next;
             init_decision_node(next, new_theorem->left, new_ks, NULL, curr);
 
-            return prove_with_tree(next, seen_goals);
+            return prove_with_tree(next, final_goal);
         }
     }
 
     printf("Decision path 2 failed\n");
 
-    //decision path 3: adding axiom whos RHS of RHS matches of goal
-    for (int i = 0; i < NUM_AXIOMS; i++)
+    //decision path 3: adding axiom whos RHS of RHS matches of goal (just ax 2)
+    if (!curr->paths[6])
     {
-        if (curr->paths[i+6]) continue;
+        curr->paths[6] = true;
         subst_map_init(&subst_map);
-        if (axiom_set[i]->right->right->op == IMPLIES && fit_onto_axiom(&subst_map, axiom_set[i]->right->right, curr->goal))
+        if (fit_onto_axiom(&subst_map, axiom_set[1]->right->right, curr->goal))
         {
             //if axiom fits onto it, then take that as decision edge
-            knowledge_set_t* new_ks = clone_knowledge_set(curr->ks);
-            theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[i]); //issue if not variables bound
-            add_to_knowledge_set(new_ks, new_theorem);
-            decision_node_t* next = malloc(sizeof(decision_node_t));
-            decision_node_t* next_next = malloc(sizeof(decision_node_t));
+            theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[1]); //issue if not variables bound
+            if (!contains_goal(curr, new_theorem->left)) //prevent cycles in decision tree
+            {
+                knowledge_set_t* new_ks = clone_knowledge_set(curr->ks);
+                add_to_knowledge_set(new_ks, new_theorem);
 
-            curr->next = next;
+                decision_node_t* next = malloc(sizeof(decision_node_t));
+                curr->next = next;
+                init_decision_node(next, new_theorem->left, new_ks, NULL, curr);
 
-            init_decision_node(next, new_theorem->left, new_ks, next_next, curr);
-            init_decision_node(next_next, new_theorem->right->left, new_ks, NULL, next);
+                //decision_node_t* next_next = malloc(sizeof(decision_node_t));
 
-            /*
-            next_next->goal = new_theorem->right->left;
-            next_next->prev = next;
-            next_next->ks = new_ks;
-            next_next->next = NULL;
-            */
-            curr->paths[i] = true;
-            return prove_with_tree(next, seen_goals);
+                //curr->next = next;
+                //init_decision_node(next_next, new_theorem->right->left, new_ks, NULL, next);
+
+                /*
+                next_next->goal = new_theorem->right->left;
+                next_next->prev = next;
+                next_next->ks = new_ks;
+                next_next->next = NULL;
+                */
+                return prove_with_tree(next, final_goal);
+            }
         }
     }
 
@@ -309,10 +320,10 @@ int prove_with_tree(decision_node_t* curr, knowledge_set_t *seen_goals)
     if (curr->prev == NULL)
         return 0;
     
-    sleep(1);
 
-    return prove_with_tree(curr->prev, seen_goals);
+    return prove_with_tree(curr->prev, final_goal);
     //gotta somehow keep track of which decision we took and take other
     //return 0;
 }
+
 
