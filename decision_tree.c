@@ -12,11 +12,13 @@
 
 void init_decision_node(decision_node_t* target, 
                         theorem_t* goal,
+                        theorem_t* secondary_goal,
                         knowledge_set_t* ks,
                         decision_node_t* next,
                         decision_node_t* prev)
 {
     target->goal = goal;
+    target->secondary_goal = secondary_goal;
     target->ks   = ks;
     target->next = next;
     target->prev = prev;

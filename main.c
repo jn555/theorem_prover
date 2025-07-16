@@ -43,7 +43,7 @@ int main()
     //decision_node_t* head = calloc(1, sizeof(*head));
     
     decision_node_t* head = malloc(sizeof(decision_node_t)); 
-    init_decision_node(head, a_impl_a, ks, NULL, NULL);
+    init_decision_node(head, a_impl_a, NULL, ks, NULL, NULL);
     // knowledge_set_t *seen_goals = malloc(sizeof(knowledge_set_t));
     // init_knowledge_set(seen_goals);
 

@@ -9,6 +9,12 @@ void init_hashtable()
     {
         hashtable[i] = NULL;
     }
+    theorem_t* new_theorem = malloc(sizeof(theorem_t));
+    new_theorem->op = GENERIC;
+    new_theorem->hash = 0;
+    new_theorem->next = NULL;
+    hashtable[0] = new_theorem;
+
 }
 
 static inline uint32_t mix32(uint32_t op, uint32_t target)
@@ -114,9 +120,7 @@ theorem_t* make_impl(theorem_t* left, theorem_t* right)
 
 theorem_t* make_generic()
 {
-    theorem_t* new_theorem = malloc(sizeof(theorem_t));
-    new_theorem->op = GENERIC;
-    return new_theorem;
+    return hashtable[0];
 }
 
 

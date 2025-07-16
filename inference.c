@@ -222,7 +222,7 @@ int prove_with_tree(decision_node_t* curr, theorem_t* final_goal)
         //if not already explored, and you can form the goal with the axiom directly
         if (fit_onto_axiom(&subst_map, axiom_set[i], curr->goal))
         {
-            printf("\nActually within first lmao\n");
+            printf("\nWithin First\n");
             //if axiom fits onto it, then take that as decision edge
             theorem_t* new_theorem = generate_modified_axiom(&subst_map, axiom_set[i]); //issue if not variables bound
             if (contains_theorem(curr->ks, new_theorem)) continue;
@@ -232,7 +232,7 @@ int prove_with_tree(decision_node_t* curr, theorem_t* final_goal)
 
             curr->next = next;
 
-            init_decision_node(next, NULL, new_ks, NULL, curr);
+            init_decision_node(next, curr->secondary_goal, NULL, new_ks, NULL, curr);
 
     
 
@@ -240,14 +240,12 @@ int prove_with_tree(decision_node_t* curr, theorem_t* final_goal)
             // next->next = NULL;
             // next->ks = new_ks;
             // next->goal = NULL; //already reached goal
-            printf("The KS is: \n");
-            print_knowledge_set(new_ks);
             //print_decision_tree(curr);
-            printf("\n");
             // if (prove_with_tree(next, seen_goals))     // only return if child finds a proof
             //if (mp(next->ks, final_goal)) return 1;
-
-            return 1;
+            if (mp(next->ks, final_goal)) return 1;
+            else if (next->goal != NULL) return prove_with_tree(next, final_goal);
+            else return 0; 
             //return 1; //may be wrong, i wanna do MP
         }
     }
@@ -272,7 +270,7 @@ int prove_with_tree(decision_node_t* curr, theorem_t* final_goal)
 
             decision_node_t* next = malloc(sizeof(decision_node_t));
             curr->next = next;
-            init_decision_node(next, new_theorem->left, new_ks, NULL, curr);
+            init_decision_node(next, new_theorem->left, curr->secondary_goal, new_ks, NULL, curr);
 
             return prove_with_tree(next, final_goal);
         }
@@ -294,22 +292,22 @@ int prove_with_tree(decision_node_t* curr, theorem_t* final_goal)
                 knowledge_set_t* new_ks = clone_knowledge_set(curr->ks);
                 add_to_knowledge_set(new_ks, new_theorem);
 
-                decision_node_t* next = malloc(sizeof(decision_node_t));
-                curr->next = next;
-                init_decision_node(next, new_theorem->left, new_ks, NULL, curr);
+                decision_node_t* next_1 = malloc(sizeof(decision_node_t));
+                //decision_node_t* next_2 = malloc(sizeof(decision_node_t));
 
-                //decision_node_t* next_next = malloc(sizeof(decision_node_t));
+                curr->next = next_1;
 
-                //curr->next = next;
-                //init_decision_node(next_next, new_theorem->right->left, new_ks, NULL, next);
+                init_decision_node(next_1, new_theorem->left, new_theorem->right->left, new_ks, NULL, curr);
 
+                //init_decision_node(next_2, new_theorem->right->left, new_ks, NULL, curr);
+ 
                 /*
                 next_next->goal = new_theorem->right->left;
                 next_next->prev = next;
                 next_next->ks = new_ks;
                 next_next->next = NULL;
                 */
-                return prove_with_tree(next, final_goal);
+                return prove_with_tree(next_1, final_goal);
             }
         }
     }

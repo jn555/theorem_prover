@@ -9,11 +9,12 @@
 #include "types.h"
 #include "utils.h"
 
-#define NUM_AXIOM_PATHS 6
+#define NUM_AXIOM_PATHS 7
 
 typedef struct decision_node
 {
     theorem_t* goal;
+    theorem_t* secondary_goal;
     knowledge_set_t* ks;
     struct decision_node* next;
     struct decision_node* prev;
@@ -23,6 +24,7 @@ typedef struct decision_node
 void print_decision_tree(decision_node_t* head);
 void init_decision_node(decision_node_t* target, 
                         theorem_t* goal,
+                        theorem_t* secondary_goal,
                         knowledge_set_t* ks,
                         decision_node_t* next,
                         decision_node_t* prev);
